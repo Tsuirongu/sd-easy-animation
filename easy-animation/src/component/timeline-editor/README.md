@@ -1,0 +1,1 @@
+this component is forked by https://github.com/kevintech/timeline-editor-react
