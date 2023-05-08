@@ -1,5 +1,9 @@
 # -*- coding: UTF-8 -*-
 
+import pathlib
+import typing
+
+import urllib3
 import modules.scripts as scripts
 import gradio as gr
 import os
@@ -67,7 +71,15 @@ def on_ui_tabs():
                 nextFrame = gr.Image()
             gallery.select(fn=on_select, inputs=None, outputs=[previousFrame, currentFrame, nextFrame])
         with gr.Column(variant="panel"):
-            gr.HTML('<iframe src="static/index.html" height=500, width="100%"/>', elem_id='react')
+            html_path =  os.path.join(extension_path,"easy-animation","build","index.html")
+            html_url = f"/file={html_path}"
+            print("test" + html_url)
+            gr.HTML(
+                f"""
+                <iframe src="{html_url}" height=500, width="100%"/>
+                """,
+                elem_id='react'
+            )
         btn.click(load_images, text, gallery)
 
         return (
