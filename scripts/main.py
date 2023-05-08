@@ -1,11 +1,26 @@
-import os.path
+# -*- coding: UTF-8 -*-
+
+import modules.scripts as scripts
 import gradio as gr
-import glob
-from pathlib import Path
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-import uvicorn
+import os
+import webbrowser
+import requests
+import random
+import hashlib
+import json
+import shutil
+import re
+import modules
+from modules import script_callbacks
+from modules import shared
+
+# init
+
+# root path
+root_path = os.getcwd()
+
+# extension path
+extension_path = scripts.basedir()
 
 # iterate over files in
 # that directory
@@ -33,7 +48,7 @@ def on_select(evt: gr.SelectData):
     return [pre_frame, image_store[evt.index], next_frame]
 
 def on_ui_tabs():
-    with gr.Blocks(css='./styles.css') as demo:
+    with gr.Blocks(css='./styles.css') as sd_easy_animation:
         with gr.Column(variant="panel"):
             with gr.Row(variant="compact"):
                 text = gr.Textbox(
@@ -53,16 +68,31 @@ def on_ui_tabs():
             gallery.select(fn=on_select, inputs=None, outputs=[previousFrame, currentFrame, nextFrame])
         with gr.Column(variant="panel"):
             gr.HTML('<iframe src="static/index.html" height=500, width="100%"/>', elem_id='react')
-        # append civitai to here
-        # TODO: make it a new tab
-        with gr.Column(variant="panel"):
-            gr.HTML('<iframe src="https://civitai.com/" height=500, width="100%"/>', elem_id='something-amazing')
         btn.click(load_images, text, gallery)
 
-if __name__ == "__main__":
-    app = FastAPI()
-    static_dir = Path('./easy-animation/build')
-    app.mount("/static", StaticFiles(directory=static_dir), name="static")
-    # mount Gradio app to FastAPI app
-    app = gr.mount_gradio_app(app, demo, path="/")
-    uvicorn.run(app, host="127.0.0.1", port=7860)
+        return (
+            (
+                sd_easy_animation,
+                "sd-easy-animation",
+                "sd_easy_animation",
+            ),
+        )
+
+def on_civitai_ui_tabs():
+    with gr.Blocks(css='./styles.css') as sd_easy_civitai:
+        # append civitai to here
+        with gr.Column(variant="panel"):
+            gr.HTML('<iframe src="https://civitai.com/" height=850, width="100%"/>', elem_id='something-amazing')
+        return (
+            (
+                sd_easy_civitai,
+                "sd-easy-civitai",
+                "sd_easy_civitai",
+            ),
+        )
+
+def InitTabUI():
+    script_callbacks.on_ui_tabs(on_ui_tabs)
+    script_callbacks.on_ui_tabs(on_civitai_ui_tabs)
+
+InitTabUI()
